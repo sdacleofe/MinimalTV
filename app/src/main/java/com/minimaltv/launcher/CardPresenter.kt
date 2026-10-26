@@ -63,7 +63,7 @@ class CardPresenter : Presenter() {
         val cardView = viewHolder.view as ImageCardView
         // Remove references to images so that the garbage collector can free up memory
         cardView.mainImageView?.let {
-            Glide.with(viewHolder.view.context).clear(it)
+            Glide.with(viewHolder.view.context.applicationContext).clear(it)
         }
         cardView.badgeImage = null
         cardView.mainImage = null

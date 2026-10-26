@@ -1,6 +1,5 @@
 package com.minimaltv.launcher
 
-import java.util.Collections
 
 import android.content.Intent
 import android.graphics.Color
@@ -102,12 +101,10 @@ class MainFragment : BrowseSupportFragment() {
         val cardPresenter = CardPresenter()
 
         for (i in 0 until NUM_ROWS) {
-            if (i != 0) {
-                Collections.shuffle(list)
-            }
+            val rowMovies = if (i == 0) list else list.shuffled()
             val listRowAdapter = ArrayObjectAdapter(cardPresenter)
             for (j in 0 until NUM_COLS) {
-                listRowAdapter.add(list[j % 5])
+                listRowAdapter.add(rowMovies[j % rowMovies.size])
             }
             val header = HeaderItem(i.toLong(), MovieList.MOVIE_CATEGORY[i])
             rowsAdapter.add(ListRow(header, listRowAdapter))
