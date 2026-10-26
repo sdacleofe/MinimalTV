@@ -16,79 +16,32 @@ object MovieList {
     private var count: Long = 0
 
     private fun setupMovies(): List<Movie> {
-        val title = arrayOf(
-            "Zeitgeist 2010_ Year in Review",
-            "Google Demo Slam_ 20ft Search",
-            "Introducing Gmail Blue",
-            "Introducing Google Fiber to the Pole",
-            "Introducing Google Nose"
-        )
+        val bunnyPoster = "https://media.w3.org/2010/05/bunny/poster.png"
+        val sintelPoster = "https://media.w3.org/2010/05/sintel/poster.png"
+        val testPoster = "https://media.w3.org/2010/05/video/poster.png"
 
-        val description = "Fusce id nisi turpis. Praesent viverra bibendum semper. " +
-                "Donec tristique, orci sed semper lacinia, quam erat rhoncus massa, non congue tellus est " +
-                "quis tellus. Sed mollis orci venenatis quam scelerisque accumsan. Curabitur a massa sit " +
-                "amet mi accumsan mollis sed et magna. Vivamus sed aliquam risus. Nulla eget dolor in elit " +
-                "facilisis mattis. Ut aliquet luctus lacus. Phasellus nec commodo erat. Praesent tempus id " +
-                "lectus ac scelerisque. Maecenas pretium cursus lectus id volutpat."
-        val studio = arrayOf(
-            "Studio Zero",
-            "Studio One",
-            "Studio Two",
-            "Studio Three",
-            "Studio Four"
+        return listOf(
+            movie("Big Buck Bunny", "A cheerful rabbit faces a band of forest hunters in this open Blender short.", "Blender Open Movies", "https://media.w3.org/2010/05/bunny/movie.mp4", bunnyPoster),
+            movie("Big Buck Bunny Trailer", "A short preview of Big Buck Bunny, a freely available open movie test stream.", "Blender Open Movies", "https://media.w3.org/2010/05/bunny/trailer.mp4", bunnyPoster),
+            movie("Sintel Trailer", "A young woman searches for her lost dragon companion in this open animated short.", "Blender Open Movies", "https://media.w3.org/2010/05/sintel/trailer.mp4", sintelPoster),
+            movie("W3C MPEG-4 Test Clip", "A compact MPEG-4 sample for testing Android TV video loading and seeking.", "W3C Media Tests", "https://media.w3.org/2010/05/video/movie_300.mp4", testPoster),
+            movie("W3C WebM Test Clip", "A compact WebM sample for testing an alternate TV-compatible video format.", "W3C Media Tests", "https://media.w3.org/2010/05/video/movie_300.webm", testPoster)
         )
-        val videoUrl = arrayOf(
-            "https://media.w3.org/2010/05/bunny/trailer.mp4",
-            "https://media.w3.org/2010/05/bunny/trailer.mp4",
-            "https://media.w3.org/2010/05/bunny/trailer.mp4",
-            "https://media.w3.org/2010/05/bunny/trailer.mp4",
-            "https://media.w3.org/2010/05/bunny/trailer.mp4"
-        )
-        val bgImageUrl = arrayOf(
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Zeitgeist/Zeitgeist%202010_%20Year%20in%20Review/bg.jpg",
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/bg.jpg",
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Gmail%20Blue/bg.jpg",
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Fiber%20to%20the%20Pole/bg.jpg",
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Nose/bg.jpg"
-        )
-        val cardImageUrl = arrayOf(
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Zeitgeist/Zeitgeist%202010_%20Year%20in%20Review/card.jpg",
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/Demo%20Slam/Google%20Demo%20Slam_%2020ft%20Search/card.jpg",
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Gmail%20Blue/card.jpg",
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Fiber%20to%20the%20Pole/card.jpg",
-            "https://commondatastorage.googleapis.com/android-tv/Sample%20videos/April%20Fool's%202013/Introducing%20Google%20Nose/card.jpg"
-        )
-
-        val list = title.indices.map {
-            buildMovieInfo(
-                title[it],
-                description,
-                studio[it],
-                videoUrl[it],
-                cardImageUrl[it],
-                bgImageUrl[it]
-            )
-        }
-
-        return list
     }
 
-    private fun buildMovieInfo(
+    private fun movie(
         title: String,
         description: String,
         studio: String,
         videoUrl: String,
-        cardImageUrl: String,
-        backgroundImageUrl: String
-    ): Movie {
-        val movie = Movie()
-        movie.id = count++
-        movie.title = title
-        movie.description = description
-        movie.studio = studio
-        movie.cardImageUrl = cardImageUrl
-        movie.backgroundImageUrl = backgroundImageUrl
-        movie.videoUrl = videoUrl
-        return movie
-    }
+        posterUrl: String
+    ): Movie = Movie(
+        id = count++,
+        title = title,
+        description = description,
+        studio = studio,
+        videoUrl = videoUrl,
+        cardImageUrl = posterUrl,
+        backgroundImageUrl = posterUrl
+    )
 }
