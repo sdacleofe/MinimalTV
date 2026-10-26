@@ -39,7 +39,7 @@ import com.bumptech.glide.request.transition.Transition
  */
 class MainFragment : BrowseSupportFragment() {
 
-    private val mHandler = Handler(Looper.myLooper()!!)
+    private val mHandler = Handler(Looper.getMainLooper())
     private lateinit var mBackgroundManager: BackgroundManager
     private var mDefaultBackground: Drawable? = null
     private lateinit var mMetrics: DisplayMetrics
@@ -67,13 +67,14 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     private fun prepareBackgroundManager() {
-
-        mBackgroundManager = BackgroundManager.getInstance(activity)
-        mBackgroundManager.attach(activity!!.window)
-        mDefaultBackground = ContextCompat.getDrawable(context!!, R.drawable.default_background)
+        val hostActivity = activity ?: return
+        val fragmentContext = context ?: return
+        mBackgroundManager = BackgroundManager.getInstance(hostActivity)
+        mBackgroundManager.attach(hostActivity.window)
+        mDefaultBackground = ContextCompat.getDrawable(fragmentContext, R.drawable.default_background)
         mMetrics = DisplayMetrics()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val bounds = activity!!.windowManager.currentWindowMetrics.bounds
+            val bounds = hostActivity.windowManager.currentWindowMetrics.bounds
             mMetrics.widthPixels = bounds.width()
             mMetrics.heightPixels = bounds.height()
         } else {
@@ -88,9 +89,10 @@ class MainFragment : BrowseSupportFragment() {
         isHeadersTransitionOnBackEnabled = true
 
         // set fastLane (or headers) background color
-        brandColor = ContextCompat.getColor(context!!, R.color.fastlane_background)
+        val fragmentContext = context ?: return
+        brandColor = ContextCompat.getColor(fragmentContext, R.color.fastlane_background)
         // set search icon color
-        searchAffordanceColor = ContextCompat.getColor(context!!, R.color.search_opaque)
+        searchAffordanceColor = ContextCompat.getColor(fragmentContext, R.color.search_opaque)
     }
 
     private fun loadRows() {
@@ -125,8 +127,9 @@ class MainFragment : BrowseSupportFragment() {
 
     private fun setupEventListeners() {
         setOnSearchClickedListener {
-            Toast.makeText(context!!, "Implement your own in-app search", Toast.LENGTH_LONG)
-                .show()
+            context?.let {
+                Toast.makeText(it, "Implement your own in-app search", Toast.LENGTH_LONG).show()
+            }
         }
 
         onItemViewClickedListener = ItemViewClickedListener()
@@ -143,22 +146,26 @@ class MainFragment : BrowseSupportFragment() {
 
             if (item is Movie) {
                 Log.d(TAG, "Item: " + item.toString())
-                val intent = Intent(context!!, DetailsActivity::class.java)
+                val fragmentContext = context ?: return
+                val hostActivity = activity ?: return
+                val imageView = (itemViewHolder.view as ImageCardView).mainImageView ?: return
+                val intent = Intent(fragmentContext, DetailsActivity::class.java)
                 intent.putExtra(DetailsActivity.MOVIE, item)
 
                 val bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    activity!!,
-                    (itemViewHolder.view as ImageCardView).mainImageView!!,
+                    hostActivity,
+                    imageView,
                     DetailsActivity.SHARED_ELEMENT_NAME
                 )
                     .toBundle()
                 startActivity(intent, bundle)
             } else if (item is String) {
                 if (item.contains(getString(R.string.error_fragment))) {
-                    val intent = Intent(context!!, BrowseErrorActivity::class.java)
+                    val fragmentContext = context ?: return
+                    val intent = Intent(fragmentContext, BrowseErrorActivity::class.java)
                     startActivity(intent)
                 } else {
-                    Toast.makeText(context!!, item, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context ?: return, item, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -177,9 +184,11 @@ class MainFragment : BrowseSupportFragment() {
     }
 
     private fun updateBackground(uri: String?) {
+        if (!isAdded) return
+        val fragmentContext = context ?: return
         val width = mMetrics.widthPixels
         val height = mMetrics.heightPixels
-        Glide.with(context!!)
+        Glide.with(this@MainFragment)
             .load(uri)
             .centerCrop()
             .override(width, height)

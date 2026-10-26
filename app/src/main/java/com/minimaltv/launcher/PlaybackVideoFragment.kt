@@ -2,6 +2,7 @@ package com.minimaltv.launcher
 
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.core.content.IntentCompat
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
@@ -34,7 +35,19 @@ class PlaybackVideoFragment : VideoSupportFragment() {
         val videoUrl = movie.videoUrl
 
         val glueHost = VideoSupportFragmentGlueHost(this@PlaybackVideoFragment)
-        val playerAdapter = MediaPlayerAdapter(context)
+        val playerAdapter = object : MediaPlayerAdapter(requireContext()) {
+            override fun onError(what: Int, extra: Int): Boolean {
+                activity?.runOnUiThread {
+                    Toast.makeText(
+                        context,
+                        "Unable to play this video",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    activity?.finish()
+                }
+                return true
+            }
+        }
         playerAdapter.setRepeatAction(PlaybackControlsRow.RepeatAction.INDEX_NONE)
 
         mTransportControlGlue = PlaybackTransportControlGlue(getActivity(), playerAdapter)

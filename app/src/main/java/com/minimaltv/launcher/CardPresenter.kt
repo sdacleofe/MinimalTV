@@ -55,7 +55,7 @@ class CardPresenter : Presenter() {
             .dontAnimate()
             .placeholder(mDefaultCardImage)
             .error(mDefaultCardImage)
-            .into(cardView.mainImageView!!)
+            .into(cardView.mainImageView ?: return)
     }
 
     override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {
