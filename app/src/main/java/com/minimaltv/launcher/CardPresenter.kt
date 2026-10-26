@@ -45,22 +45,26 @@ class CardPresenter : Presenter() {
         val cardView = viewHolder.view as ImageCardView
 
         Log.d(TAG, "onBindViewHolder")
-        if (movie.cardImageUrl != null) {
-            cardView.titleText = movie.title
-            cardView.contentText = movie.studio
-            cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
-            Glide.with(viewHolder.view.context)
-                .load(movie.cardImageUrl)
-                .centerCrop()
-                .error(mDefaultCardImage)
-                .into(cardView.mainImageView!!)
-        }
+        cardView.titleText = movie.title
+        cardView.contentText = movie.studio
+        cardView.setMainImageDimensions(CARD_WIDTH, CARD_HEIGHT)
+        Glide.with(viewHolder.view.context)
+            .load(movie.cardImageUrl)
+            .centerCrop()
+            .override(CARD_WIDTH, CARD_HEIGHT)
+            .dontAnimate()
+            .placeholder(mDefaultCardImage)
+            .error(mDefaultCardImage)
+            .into(cardView.mainImageView!!)
     }
 
     override fun onUnbindViewHolder(viewHolder: Presenter.ViewHolder) {
         Log.d(TAG, "onUnbindViewHolder")
         val cardView = viewHolder.view as ImageCardView
         // Remove references to images so that the garbage collector can free up memory
+        cardView.mainImageView?.let {
+            Glide.with(viewHolder.view.context).clear(it)
+        }
         cardView.badgeImage = null
         cardView.mainImage = null
     }

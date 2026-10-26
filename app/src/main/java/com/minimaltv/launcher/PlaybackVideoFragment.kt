@@ -48,6 +48,8 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 
     override fun onPause() {
         super.onPause()
-        mTransportControlGlue.pause()
+        if (::mTransportControlGlue.isInitialized) {
+            mTransportControlGlue.pause()
+        }
     }
 }

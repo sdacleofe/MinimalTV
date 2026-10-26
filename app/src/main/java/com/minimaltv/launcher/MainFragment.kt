@@ -1,8 +1,6 @@
 package com.minimaltv.launcher
 
 import java.util.Collections
-import java.util.Timer
-import java.util.TimerTask
 
 import android.content.Intent
 import android.graphics.Color
@@ -45,8 +43,10 @@ class MainFragment : BrowseSupportFragment() {
     private lateinit var mBackgroundManager: BackgroundManager
     private var mDefaultBackground: Drawable? = null
     private lateinit var mMetrics: DisplayMetrics
-    private var mBackgroundTimer: Timer? = null
     private var mBackgroundUri: String? = null
+    private val mBackgroundUpdateRunnable = Runnable {
+        updateBackground(mBackgroundUri)
+    }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         Log.i(TAG, "onCreate")
@@ -63,8 +63,7 @@ class MainFragment : BrowseSupportFragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy: " + mBackgroundTimer?.toString())
-        mBackgroundTimer?.cancel()
+        mHandler.removeCallbacks(mBackgroundUpdateRunnable)
     }
 
     private fun prepareBackgroundManager() {
@@ -183,6 +182,8 @@ class MainFragment : BrowseSupportFragment() {
         Glide.with(context!!)
             .load(uri)
             .centerCrop()
+            .override(width, height)
+            .dontAnimate()
             .error(mDefaultBackground)
             .into<CustomTarget<Drawable>>(
                 object : CustomTarget<Drawable>(width, height) {
@@ -195,20 +196,11 @@ class MainFragment : BrowseSupportFragment() {
 
                     override fun onLoadCleared(placeholder: Drawable?) = Unit
                 })
-        mBackgroundTimer?.cancel()
     }
 
     private fun startBackgroundTimer() {
-        mBackgroundTimer?.cancel()
-        mBackgroundTimer = Timer()
-        mBackgroundTimer?.schedule(UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY.toLong())
-    }
-
-    private inner class UpdateBackgroundTask : TimerTask() {
-
-        override fun run() {
-            mHandler.post { updateBackground(mBackgroundUri) }
-        }
+        mHandler.removeCallbacks(mBackgroundUpdateRunnable)
+        mHandler.postDelayed(mBackgroundUpdateRunnable, BACKGROUND_UPDATE_DELAY.toLong())
     }
 
     private inner class GridItemPresenter : Presenter() {
