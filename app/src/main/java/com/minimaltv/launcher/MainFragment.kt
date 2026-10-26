@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import androidx.leanback.app.BackgroundManager
@@ -32,7 +33,7 @@ import android.widget.TextView
 import android.widget.Toast
 
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.SimpleTarget
+import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 
 /**
@@ -72,7 +73,13 @@ class MainFragment : BrowseSupportFragment() {
         mBackgroundManager.attach(activity!!.window)
         mDefaultBackground = ContextCompat.getDrawable(context!!, R.drawable.default_background)
         mMetrics = DisplayMetrics()
-        activity!!.windowManager.defaultDisplay.getMetrics(mMetrics)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val bounds = activity!!.windowManager.currentWindowMetrics.bounds
+            mMetrics.widthPixels = bounds.width()
+            mMetrics.heightPixels = bounds.height()
+        } else {
+            mMetrics.setTo(resources.displayMetrics)
+        }
     }
 
     private fun setupUIElements() {
@@ -177,14 +184,16 @@ class MainFragment : BrowseSupportFragment() {
             .load(uri)
             .centerCrop()
             .error(mDefaultBackground)
-            .into<SimpleTarget<Drawable>>(
-                object : SimpleTarget<Drawable>(width, height) {
+            .into<CustomTarget<Drawable>>(
+                object : CustomTarget<Drawable>(width, height) {
                     override fun onResourceReady(
                         drawable: Drawable,
                         transition: Transition<in Drawable>?
                     ) {
                         mBackgroundManager.drawable = drawable
                     }
+
+                    override fun onLoadCleared(placeholder: Drawable?) = Unit
                 })
         mBackgroundTimer?.cancel()
     }

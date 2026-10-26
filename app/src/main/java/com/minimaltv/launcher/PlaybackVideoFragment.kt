@@ -2,6 +2,7 @@ package com.minimaltv.launcher
 
 import android.net.Uri
 import android.os.Bundle
+import androidx.core.content.IntentCompat
 import androidx.leanback.app.VideoSupportFragment
 import androidx.leanback.app.VideoSupportFragmentGlueHost
 import androidx.leanback.media.MediaPlayerAdapter
@@ -16,7 +17,9 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val movie = activity?.intent?.getSerializableExtra(DetailsActivity.MOVIE) as? Movie
+        val movie = activity?.intent?.let {
+            IntentCompat.getSerializableExtra(it, DetailsActivity.MOVIE, Movie::class.java)
+        }
             ?: run {
                 activity?.finish()
                 return
